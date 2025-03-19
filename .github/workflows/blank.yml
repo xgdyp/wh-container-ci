@@ -75,16 +75,15 @@ jobs:
           echo '${{ steps.issue.outputs.yaml_content }}' > image-sync-config.json
           npx js-yaml image-sync-config.json > image-sync-config.yaml
       
-      - name: Comment on issue with YAML content
-        uses: actions/github-script@v6
+      - name: Add comment
+        uses: actions/github-script@v5
         with:
           script: |
-            const fs = require('fs');
-            const yaml = fs.readFileSync('image-sync-config.yaml', 'utf8');
-            
-            await github.rest.issues.createComment({
+            const fs = require('fs')
+            const data = fs.readFileSync('image-sync-config.yaml', 'utf8')
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `Generated YAML configuration:\n\n\`\`\`yaml\n${yaml}\n\`\`\``
-            });
+              body: data
+            })
