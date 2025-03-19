@@ -41,13 +41,7 @@ jobs:
           const issueBody = issue.data.body;
           console.log(issueBody);
           
-          # core.setOutput('issue_content', fullContent);
-          # const fs = require('fs');
-          # const path = require('path');
 
-          # const filePath = `issue-content.md`);
-          # fs.writeFileSync(filePath, fullContent);
-          # console.log(`Issue content saved to ${filePath}`);
           
     - name: Lint with flake8
       run: |
