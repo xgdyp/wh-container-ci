@@ -3,10 +3,10 @@
 
 name: Python package
 
+
 on:
   issues:
-    type:[opened, edited]
-
+    types: [opened, edited]
 jobs:
   build:
 
