@@ -1,5 +1,5 @@
 import json
-prefix = 'registry.cn-hangzhou.aliyuncs.com/xgdyp/'
+prefix = 'registry.cn-hangzhou.aliyuncs.com/whcr/'
 
 d = {}
 origin_trans_d = {}
