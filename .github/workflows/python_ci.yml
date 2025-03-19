@@ -41,7 +41,9 @@ jobs:
           const issueBody = issue.data.body;
           console.log(issueBody);
           core.setOutput('issue_content', issueBody);
-
+          const filePath = ('issue-content.md');
+          const fs = require('fs');
+          const path = require('path');
           
           
     - name: Lint with flake8
