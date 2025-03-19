@@ -1,33 +1,70 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
-on:
-  issues:
-    types: [opened, edited]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  process-issue-and-sync:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Get issue body
+        id: issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            const issueBody = issue.data.body;
+            
+            // Check if issue body exists and has content
+            if (!issueBody || issueBody.trim() === '') {
+              core.setFailed('Issue body is empty');
+              return;
+            }
+            
+            // Extract list items from issue body
+            const listItems = issueBody
+              .split('\n')
+              .map(line => line.trim())
+              .filter(line => line.startsWith('-'))
+              .map(line => line.substring(1).trim());
+            
+            if (listItems.length === 0) {
+              core.setFailed('No list items found in issue body');
+              return;
+            }
+            
+            // Convert list to YAML format
+            const yaml = {
+              images: listItems.reduce((obj, item) => {
+                const parts = item.split(':');
+                if (parts.length >= 2) {
+                  const source = parts[0].trim();
+                  const target = parts[1].trim();
+                  obj[source] = target;
+                }
+                return obj;
+              }, {})
+            };
+            
+            const yamlString = JSON.stringify(yaml);
+            core.setOutput('yaml_content', yamlString);
+            
+            // Write YAML to file
+            const fs = require('fs');
+            fs.writeFileSync('image-sync-config.yaml', require('js-yaml').dump(yaml));
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      
+      - name: Install js-yaml
+        run: npm install js-yaml
+      
+      - name: Create YAML file
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo '${{ steps.issue.outputs.yaml_content }}' > image-sync-config.json
+          npx js-yaml image-sync-config.json > image-sync-config.yaml
+      
