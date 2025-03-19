@@ -40,7 +40,7 @@ jobs:
           });
           const issueBody = issue.data.body;
           console.log(issueBody);
-          core.setOutput('issue_content', issue_Body);
+          core.setOutput('issue_content', issueBody);
 
           
           
