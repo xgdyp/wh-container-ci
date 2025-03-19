@@ -3,13 +3,21 @@ name: Issue Triggered Image Sync
 on:
   issues:
     types: [opened, edited]
-    
+
 jobs:
   process-issue-and-sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      
+      - name: Install js-yaml
+        run: npm install js-yaml
       
       - name: Get issue body
         id: issue
@@ -60,14 +68,7 @@ jobs:
             // Write YAML to file
             const fs = require('fs');
             fs.writeFileSync('image-sync-config.yaml', require('js-yaml').dump(yaml));
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-      
-      - name: Install js-yaml
-        run: npm install js-yaml
+
       
       - name: Create YAML file
         run: |
