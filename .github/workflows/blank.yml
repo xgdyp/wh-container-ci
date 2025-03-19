@@ -1,3 +1,9 @@
+name: Issue Triggered Image Sync
+
+on:
+  issues:
+    types: [opened, edited]
+    
 jobs:
   process-issue-and-sync:
     runs-on: ubuntu-latest
