@@ -5,7 +5,7 @@ d = {}
 origin_trans_d = {}
 with open('issue-content.md') as f:
     for line in f.readlines():
-        origin = line.strip().strip('-').strip()
+        origin = line.strip()
         ccnt = line.count('/')
         if ccnt == 2:
             parts = origin.split('/')
