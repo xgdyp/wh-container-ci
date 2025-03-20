@@ -20,7 +20,8 @@ with open('issue-content.md') as f:
         target = origin_trans_d[origin].replace('/','.')
         target = prefix + target
         d[origin] = target
-    # print(d)
+
+print(d)
 
 output_file = 'images.json'
 
