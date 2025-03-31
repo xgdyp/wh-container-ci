@@ -1,90 +1,90 @@
-name: Issue Triggered Image Sync
+# name: Issue Triggered Image Sync
 
-on:
-  issues:
-    types: labeled
-    # types: [opened, edited]
+# on:
+#   issues:
+#     types: labeled
+#     # types: [opened, edited]
 
-jobs:
-  process-issue-and-sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+# jobs:
+#   process-issue-and-sync:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '16'
       
-      - name: Install js-yaml
-        run: npm install js-yaml
+#       - name: Install js-yaml
+#         run: npm install js-yaml
       
-      - name: Get issue body
-        id: issue
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const issue = await github.rest.issues.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number
-            });
-            const issueBody = issue.data.body;
+#       - name: Get issue body
+#         id: issue
+#         uses: actions/github-script@v6
+#         with:
+#           script: |
+#             const issue = await github.rest.issues.get({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               issue_number: context.issue.number
+#             });
+#             const issueBody = issue.data.body;
             
-            // Check if issue body exists and has content
-            if (!issueBody || issueBody.trim() === '') {
-              core.setFailed('Issue body is empty');
-              return;
-            }
+#             // Check if issue body exists and has content
+#             if (!issueBody || issueBody.trim() === '') {
+#               core.setFailed('Issue body is empty');
+#               return;
+#             }
             
-            // Extract list items from issue body
-            const listItems = issueBody
-              .split('\n')
-              .map(line => line.trim())
-              .filter(line => line.startsWith('-'))
-              .map(line => line.substring(1).trim());
+#             // Extract list items from issue body
+#             const listItems = issueBody
+#               .split('\n')
+#               .map(line => line.trim())
+#               .filter(line => line.startsWith('-'))
+#               .map(line => line.substring(1).trim());
             
-            if (listItems.length === 0) {
-              core.setFailed('No list items found in issue body');
-              return;
-            }
+#             if (listItems.length === 0) {
+#               core.setFailed('No list items found in issue body');
+#               return;
+#             }
             
-            // Convert list to YAML format
-            const yaml = {
-              images: listItems.reduce((obj, item) => {
-                const parts = item.split(':');
-                if (parts.length >= 2) {
-                  const source = parts[0].trim();
-                  const target = parts[1].trim();
-                  obj[source] = target;
-                }
-                return obj;
-              }, {})
-            };
+#             // Convert list to YAML format
+#             const yaml = {
+#               images: listItems.reduce((obj, item) => {
+#                 const parts = item.split(':');
+#                 if (parts.length >= 2) {
+#                   const source = parts[0].trim();
+#                   const target = parts[1].trim();
+#                   obj[source] = target;
+#                 }
+#                 return obj;
+#               }, {})
+#             };
             
-            const yamlString = JSON.stringify(yaml);
-            core.setOutput('yaml_content', yamlString);
+#             const yamlString = JSON.stringify(yaml);
+#             core.setOutput('yaml_content', yamlString);
             
-            // Write YAML to file
-            const fs = require('fs');
-            fs.writeFileSync('image-sync-config.yaml', require('js-yaml').dump(yaml));
+#             // Write YAML to file
+#             const fs = require('fs');
+#             fs.writeFileSync('image-sync-config.yaml', require('js-yaml').dump(yaml));
 
       
-      - name: Create YAML file
-        run: |
-          echo '${{ steps.issue.outputs.yaml_content }}' > image-sync-config.json
-          npx js-yaml image-sync-config.json > image-sync-config.yaml
+#       - name: Create YAML file
+#         run: |
+#           echo '${{ steps.issue.outputs.yaml_content }}' > image-sync-config.json
+#           npx js-yaml image-sync-config.json > image-sync-config.yaml
       
-      - name: Add comment
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const fs = require('fs')
-            const data = fs.readFileSync('image-sync-config.yaml', 'utf8')
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: data
-            })
+#       - name: Add comment
+#         uses: actions/github-script@v5
+#         with:
+#           script: |
+#             const fs = require('fs')
+#             const data = fs.readFileSync('image-sync-config.yaml', 'utf8')
+#             github.rest.issues.createComment({
+#               issue_number: context.issue.number,
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               body: data
+#             })
