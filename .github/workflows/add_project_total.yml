@@ -48,7 +48,7 @@ jobs:
     
     - name: Process ISSUE to JSON
       run: |
-        python image_process.py
+        python image_process_project.py
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
