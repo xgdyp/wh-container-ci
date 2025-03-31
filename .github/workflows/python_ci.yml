@@ -6,10 +6,10 @@ name: Python package
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited,labeled]
 jobs:
   build:
-
+    if: contains(github.event.issue.labels.*.name, 'hello')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
