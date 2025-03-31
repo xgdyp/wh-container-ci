@@ -2,11 +2,12 @@ name: Issue Triggered Image Sync
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited,labeled]
 
 jobs:
   process-issue-and-sync:
     runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'repo')
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
