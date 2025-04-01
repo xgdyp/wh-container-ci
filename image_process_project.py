@@ -37,3 +37,30 @@ output_file = 'images.json'
 with open(output_file, 'w') as f:
     # 确保文件以UTF-8编码写入，这在处理特殊字符时很重要
     json.dump(d, f, indent=4, ensure_ascii=False)
+
+import json
+
+with open('images.json','r') as f:
+    
+  images = json.load(f)
+
+
+prompt = "docker pull {} && docker tag {} {} \n"
+
+rst_lst = []
+for origin, trans in images.items():
+
+  if "--" not in trans:
+    break
+
+  dnum = trans.count('--')
+  trans = trans.replace("registry.cn-hangzhou.aliyuncs.com/whcr/","10.10.114.105/project/")
+  rst = prompt.format(trans, trans, origin)
+  rst_lst.append(rst)
+
+with open('issue-feedback.md', 'w') as f:
+  for _ in rst_lst:
+    f.write(_)
+
+  
+print('finished')

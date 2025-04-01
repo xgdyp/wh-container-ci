@@ -61,7 +61,19 @@ jobs:
     #     ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
     #   run: |
     #     echo "hello world!${ACR_USERNAME}"
-
+    - name: Add comment
+      if: ${{ hashFiles('issue-feedback.md') }}
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const fs = require('fs')
+          const data = fs.readFileSync('output.md', 'utf8')
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: data
+            
     - uses: hhyasdf/image-sync-action@v1.1
       with:
         auth_file: ./auth.yaml # The auth information file of registries, optional.
