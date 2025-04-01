@@ -73,7 +73,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: data
-            
+          })
     - uses: hhyasdf/image-sync-action@v1.1
       with:
         auth_file: ./auth.yaml # The auth information file of registries, optional.

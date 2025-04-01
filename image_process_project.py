@@ -54,7 +54,7 @@ for origin, trans in images.items():
     break
 
   dnum = trans.count('--')
-  trans = trans.replace("registry.cn-hangzhou.aliyuncs.com/whcr/","10.10.114.105/project/")
+  trans = trans.replace("registry.cn-hangzhou.aliyuncs.com/whcr/","IP.IP.IP.IP/project/")
   rst = prompt.format(trans, trans, origin)
   rst_lst.append(rst)
 
