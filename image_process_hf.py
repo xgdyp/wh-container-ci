@@ -25,7 +25,8 @@ with open('issue-content.md') as f:
                 print(origin)
             # target = origin_trans_d[origin]
             # separators = r"[/:]"
-            target = origin_trans_d[origin].replace('/','--').replace(':','--').replace('.','--')
+            
+            target = origin_trans_d[origin].replace('registry.hf.space/','').replace('/','--').replace(':','--').replace('.','--')
 
 
             target = prefix +project_name +':' + target
